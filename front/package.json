@@ -1,0 +1,129 @@
+{
+  "name": "knopath",
+  "private": true,
+  "version": "0.2.0",
+  "type": "module",
+  "main": "electron.cjs",
+  "author": "KnoPath Team",
+  "description": "Branching AI Knowledge Exploration & Crystallization Tool",
+  "homepage": "https://github.com/your-username/knopath",
+  "scripts": {
+    "start": "chcp 65001 >nul && concurrently -n vite,electron -c blue,green \"npm run dev\" \"wait-on http://localhost:3010 && electron .\"",
+    "build": "npm run build:front && electron-builder",
+    "build:front": "tsc -b && vite build",
+    "dev": "vite",
+    "lint": "eslint .",
+    "pack": "npm run build:front && electron-builder --dir"
+  },
+  "dependencies": {
+    "@fontsource-variable/noto-sans-sc": "^5.2.10",
+    "@fontsource/inter": "^5.2.8",
+    "@fontsource/merriweather": "^5.2.11",
+    "@fontsource/montserrat": "^5.2.8",
+    "@fontsource/source-code-pro": "^5.2.7",
+    "@types/katex": "^0.16.8",
+    "@xyflow/react": "^12.3.0",
+    "dexie": "^4.0.7",
+    "dexie-react-hooks": "^1.1.7",
+    "katex": "^0.16.45",
+    "lucide-react": "^0.460.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "uuid": "^10.0.0",
+    "zustand": "^5.0.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.13.0",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@types/uuid": "^10.0.0",
+    "@vitejs/plugin-react": "^4.3.3",
+    "autoprefixer": "^10.4.20",
+    "concurrently": "^8.2.2",
+    "electron": "^28.3.3",
+    "electron-builder": "^24.13.3",
+    "eslint": "^9.13.0",
+    "eslint-plugin-react-hooks": "^5.0.0",
+    "eslint-plugin-react-refresh": "^0.4.14",
+    "globals": "^15.11.0",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.14",
+    "typescript": "~5.6.2",
+    "typescript-eslint": "^8.11.0",
+    "vite": "^5.4.10",
+    "wait-on": "^7.2.0"
+  },
+  "build": {
+    "appId": "com.knopath.app",
+    "productName": "KnoPath",
+    "copyright": "Copyright © 2026 KnoPath",
+    "directories": {
+      "output": "release3"
+    },
+    "files": [
+      "dist/**/*",
+      "electron.cjs",
+      "preload.cjs",
+      "assets/**/*"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        },
+        {
+          "target": "portable",
+          "arch": ["x64"]
+        }
+      ],
+      "icon": "assets/icon256.png",
+      "artifactName": "KnoPath-${version}-Setup.${ext}",
+      "signAndEditExecutable": false
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "installerIcon": "assets/icon256.png",
+      "uninstallerIcon": "assets/icon256.png",
+      "installerHeaderIcon": "assets/icon256.png",
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "KnoPath"
+    },
+    "mac": {
+      "target": [
+        "dmg",
+        "zip"
+      ],
+      "artifactName": "KnoPath-${version}-mac.${ext}"
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "artifactName": "KnoPath-${version}-linux.${ext}"
+    },
+    "extraResources": [
+      {
+        "from": "../app",
+        "to": "app",
+        "filter": [
+          "**/*",
+          "!tests/**/*",
+          "!__pycache__/**/*",
+          "!*.pyc",
+          "!requirements-test.txt"
+        ]
+      },
+      {
+        "from": "../python-embed",
+        "to": "python-embed",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ]
+  }
+}

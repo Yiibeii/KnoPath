@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>安装 AI Chat Exporter</title>
+  <style>
+    :root {
+      --olive-accent: #4a7c59;
+      --olive-dark: #3d6b4a;
+      --olive-light: #6b9b6e;
+      --olive-highlight: #e8f0ea;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #f8faf8 0%, #e8f0ea 100%);
+      min-height: 100vh;
+      padding: 40px 20px;
+      color: #333;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    .logo {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, var(--olive-accent), var(--olive-light));
+      border-radius: 20px;
+      margin: 0 auto 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .logo svg {
+      width: 48px;
+      height: 48px;
+    }
+    h1 {
+      font-size: 32px;
+      color: var(--olive-accent);
+      margin-bottom: 8px;
+    }
+    .subtitle {
+      color: #666;
+      font-size: 16px;
+    }
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 30px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+    .card h2 {
+      color: var(--olive-accent);
+      font-size: 20px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .step-number {
+      width: 28px;
+      height: 28px;
+      background: var(--olive-accent);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .browser-tabs {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .browser-tab {
+      flex: 1;
+      padding: 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 12px;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s;
+    }
+    .browser-tab:hover {
+      border-color: var(--olive-light);
+    }
+    .browser-tab.active {
+      border-color: var(--olive-accent);
+      background: var(--olive-highlight);
+    }
+    .browser-tab img {
+      width: 32px;
+      height: 32px;
+      margin-bottom: 8px;
+    }
+    .browser-tab span {
+      display: block;
+      font-weight: 500;
+    }
+    .install-content {
+      display: none;
+    }
+    .install-content.active {
+      display: block;
+    }
+    .instruction-list {
+      list-style: none;
+      padding: 0;
+    }
+    .instruction-list li {
+      padding: 12px 0;
+      border-bottom: 1px solid #f0f0f0;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .instruction-list li:last-child {
+      border-bottom: none;
+    }
+    .instruction-num {
+      width: 24px;
+      height: 24px;
+      background: var(--olive-highlight);
+      color: var(--olive-accent);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+    .shortcut {
+      background: #f5f5f5;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 13px;
+      color: #333;
+    }
+    .drag-zone {
+      border: 3px dashed var(--olive-light);
+      border-radius: 16px;
+      padding: 40px;
+      text-align: center;
+      background: var(--olive-highlight);
+      margin-top: 20px;
+      transition: all 0.2s;
+    }
+    .drag-zone:hover, .drag-zone.dragover {
+      border-color: var(--olive-accent);
+      background: #d4e8d8;
+    }
+    .drag-zone p {
+      color: var(--olive-accent);
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+    .drag-zone small {
+      color: #666;
+    }
+    .platforms {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+    .platform {
+      padding: 12px;
+      background: #f8f8f8;
+      border-radius: 8px;
+      text-align: center;
+      font-size: 13px;
+    }
+    .platform span {
+      display: block;
+      color: #666;
+      margin-top: 4px;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      background: var(--olive-accent);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+    .btn:hover {
+      background: var(--olive-dark);
+    }
+    .btn-outline {
+      background: white;
+      color: var(--olive-accent);
+      border: 2px solid var(--olive-accent);
+    }
+    .btn-outline:hover {
+      background: var(--olive-highlight);
+    }
+    .actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      color: #999;
+      font-size: 13px;
+    }
+    footer a {
+      color: var(--olive-accent);
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo">
+        <svg viewBox="0 0 48 48" fill="white">
+          <rect x="8" y="10" width="22" height="4" rx="2"/>
+          <rect x="8" y="18" width="32" height="4" rx="2"/>
+          <rect x="8" y="26" width="16" height="4" rx="2"/>
+          <rect x="8" y="34" width="32" height="4" rx="2"/>
+        </svg>
+      </div>
+      <h1>AI Chat Exporter</h1>
+      <p class="subtitle">一键导出豆包、Kimi、DeepSeek、千问等平台的对话记录</p>
+    </header>
+
+    <div class="card">
+      <h2><span class="step-number">1</span> 选择浏览器</h2>
+      <div class="browser-tabs">
+        <div class="browser-tab active" data-browser="chrome">
+          <svg width="32" height="32" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10" fill="#4285f4"/>
+            <circle cx="12" cy="12" r="4" fill="white"/>
+            <path d="M12 8c2.2 0 4 1.8 4 4s-1.8 4-4 4" fill="none" stroke="#ea4335" stroke-width="2"/>
+            <path d="M12 8c-2.2 0-4 1.8-4 4" fill="none" stroke="#34a853" stroke-width="2"/>
+          </svg>
+          <span>Chrome</span>
+        </div>
+        <div class="browser-tab" data-browser="edge">
+          <svg width="32" height="32" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10" fill="#0078d4"/>
+            <path d="M12 6c-3.3 0-6 2.7-6 6 0 2 1 3.8 2.5 4.9C9.5 15.5 11 14 12 14s2.5 1.5 3.5 2.9c1.5-1.1 2.5-2.9 2.5-4.9 0-3.3-2.7-6-6-6z" fill="white"/>
+          </svg>
+          <span>Edge</span>
+        </div>
+        <div class="browser-tab" data-browser="firefox">
+          <svg width="32" height="32" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10" fill="#ff7139"/>
+            <circle cx="9" cy="10" r="2" fill="white"/>
+            <circle cx="15" cy="10" r="2" fill="white"/>
+          </svg>
+          <span>Firefox</span>
+        </div>
+      </div>
+
+      <div id="chrome-content" class="install-content active">
+        <ul class="instruction-list">
+          <li>
+            <span class="instruction-num">1</span>
+            <div>打开 Chrome，在地址栏输入 <span class="shortcut">chrome://extensions/</span></div>
+          </li>
+          <li>
+            <span class="instruction-num">2</span>
+            <div>开启右上角的 <strong>"开发者模式"</strong> 开关</div>
+          </li>
+          <li>
+            <span class="instruction-num">3</span>
+            <div>点击 <strong>"加载已解压的扩展程序"</strong> 按钮</div>
+          </li>
+          <li>
+            <span class="instruction-num">4</span>
+            <div>选择 <code>browser-extension</code> 文件夹</div>
+          </li>
+        </ul>
+        <div class="drag-zone" id="drag-zone">
+          <p>📁 或者直接将 browser-extension 文件夹拖到这里</p>
+          <small>拖拽后会自动打开扩展管理页面</small>
+        </div>
+      </div>
+
+      <div id="edge-content" class="install-content">
+        <ul class="instruction-list">
+          <li>
+            <span class="instruction-num">1</span>
+            <div>打开 Edge，在地址栏输入 <span class="shortcut">edge://extensions/</span></div>
+          </li>
+          <li>
+            <span class="instruction-num">2</span>
+            <div>开启左侧的 <strong>"开发人员模式"</strong> 开关</div>
+          </li>
+          <li>
+            <span class="instruction-num">3</span>
+            <div>点击 <strong>"加载解压缩的扩展"</strong> 按钮</div>
+          </li>
+          <li>
+            <span class="instruction-num">4</span>
+            <div>选择 <code>browser-extension</code> 文件夹</div>
+          </li>
+        </ul>
+      </div>
+
+      <div id="firefox-content" class="install-content">
+        <ul class="instruction-list">
+          <li>
+            <span class="instruction-num">1</span>
+            <div>打开 Firefox，在地址栏输入 <span class="shortcut">about:debugging</span></div>
+          </li>
+          <li>
+            <span class="instruction-num">2</span>
+            <div>点击左侧 <strong>"此 Firefox"</strong></div>
+          </li>
+          <li>
+            <span class="instruction-num">3</span>
+            <div>点击 <strong>"临时载入附加组件..."</strong></div>
+          </li>
+          <li>
+            <span class="instruction-num">4</span>
+            <div>选择 <code>browser-extension/manifest.json</code> 文件</div>
+          </li>
+        </ul>
+        <p style="margin-top: 16px; color: #666; font-size: 13px;">
+          ⚠️ Firefox 需要使用临时加载方式，每次重启浏览器需要重新加载。
+        </p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2><span class="step-number">2</span> 生成图标（首次安装需要）</h2>
+      <p style="color: #666; margin-bottom: 16px;">打开下面的页面，下载 3 个图标文件到 <code>icons/</code> 文件夹：</p>
+      <div class="actions">
+        <a href="generate-icons.html" class="btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2"/>
+            <circle cx="8.5" cy="8.5" r="1.5"/>
+            <path d="M21 15l-5-5L5 21"/>
+          </svg>
+          打开图标生成器
+        </a>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2><span class="step-number">3</span> 支持的平台</h2>
+      <div class="platforms">
+        <div class="platform">✅ 豆包 <span>doubao.com</span></div>
+        <div class="platform">✅ Kimi <span>kimi.moonshot.cn</span></div>
+        <div class="platform">✅ DeepSeek <span>chat.deepseek.com</span></div>
+        <div class="platform">✅ 通义千问 <span>tongyi.aliyun.com</span></div>
+        <div class="platform">✅ ChatGPT <span>chat.openai.com</span></div>
+        <div class="platform">✅ Claude <span>claude.ai</span></div>
+      </div>
+    </div>
+
+    <footer>
+      <p>AI Chat Exporter 是 <a href="#">KnoPath</a> 项目的一部分</p>
+      <p style="margin-top: 8px;">MIT License © 2026</p>
+    </footer>
+  </div>
+
+  <script>
+    document.querySelectorAll('.browser-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.browser-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.install-content').forEach(c => c.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById(tab.dataset.browser + '-content').classList.add('active');
+      });
+    });
+
+    const dragZone = document.getElementById('drag-zone');
+    if (dragZone) {
+      dragZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dragZone.classList.add('dragover');
+      });
+      dragZone.addEventListener('dragleave', () => {
+        dragZone.classList.remove('dragover');
+      });
+      dragZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dragZone.classList.remove('dragover');
+        window.open('chrome://extensions/', '_blank');
+      });
+      dragZone.addEventListener('click', () => {
+        window.open('chrome://extensions/', '_blank');
+      });
+    }
+  </script>
+</body>
+</html>

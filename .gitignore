@@ -1,0 +1,72 @@
+# Dependencies
+front/node_modules/
+
+# Build outputs
+front/dist/
+front/release/
+front/release*/
+front/*/release*/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+app/__pycache__/
+app/routes/__pycache__/
+app/services/__pycache__/
+.pytest_cache/
+*.egg-info/
+
+# Environment
+.env
+app/.env
+.venv/
+venv/
+ENV/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Application data
+.knopath/
+vault/
+app/data/knopath.db
+app/data/knopath.db-wal
+app/data/knopath.db-shm
+app/logs/
+app/data/runtime_config.json
+docs/
+
+# Build artifacts
+python-embed/
+knopath.zip
+
+# Debug
+*.log
+npm-debug.log*
+
+# AI / Editor
+.claude/
+.vscode/
+
+# Temp
+npm start.txt
+tmp.txt
+
+# Sample data
+*.json
+!front/package.json
+!front/package-lock.json
+!front/tsconfig.json
+!front/tsconfig.tsbuildinfo
+!front/postcss.config.js
+!front/tailwind.config.js
