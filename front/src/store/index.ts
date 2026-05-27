@@ -155,9 +155,9 @@ function createDefaultSettings(): AppSettings {
   return {
     model: {
       provider: 'openai-compatible',
-      model: 'gpt-4o-mini',
-      apiKey: '',
-      baseUrl: 'https://api.openai.com/v1',
+      model: 'Qwen/Qwen3-30B-A3B-Instruct-2507',
+      apiKey: 'REDACTED_API_KEY',
+      baseUrl: 'https://dashscope.aliyuncs.com/compatible-mode/v1',
       temperature: 0.7,
       systemPrompt: '',
     },
