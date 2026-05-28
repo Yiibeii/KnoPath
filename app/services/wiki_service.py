@@ -314,11 +314,16 @@ def sync_wiki_pages_from_files(db: Session) -> WikiGraphData:
             project_path = os.path.join(wiki_root, project_name)
             if not os.path.isdir(project_path):
                 continue
-            for filename in os.listdir(project_path):
-                if not filename.endswith(".md"):
-                    continue
-                page = _parse_wiki_page_file(os.path.join(project_path, filename), project_name, db)
-                file_pages.append(page)
+            for root, _, files in os.walk(project_path):
+                for filename in files:
+                    if not filename.endswith(".md"):
+                        continue
+                    filepath = os.path.join(root, filename)
+                    try:
+                        page = _parse_wiki_page_file(filepath, project_name, db)
+                        file_pages.append(page)
+                    except Exception as e:
+                        logger.warning(f"Failed to parse wiki file {filepath}: {e}")
 
     file_page_ids = set()
     seen_ids: dict[str, WikiPage] = {}
@@ -864,10 +869,13 @@ def delete_wiki_page(db: Session, page_id: str) -> bool:
 
     deleted_file = delete_wiki_page_file(page, project_title)
 
-    from file_watcher import get_file_watcher
-    watcher = get_file_watcher()
-    if watcher and deleted_file:
-        watcher.add_cooldown(deleted_file)
+    if deleted_file:
+        from file_watcher import get_file_watcher
+        watcher = get_file_watcher()
+        if watcher:
+            wiki_dir = _wiki_dir(project_title)
+            filepath = os.path.join(wiki_dir, f"{sanitize_wiki_filename(page.title)}.md")
+            watcher.add_cooldown(filepath)
 
     db.query(WikiLink).filter(
         (WikiLink.source_page_id == page_id) | (WikiLink.target_page_id == page_id)

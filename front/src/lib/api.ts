@@ -179,6 +179,10 @@ export async function getGlobalSettings(): Promise<Record<string, unknown>> {
   return requestJson('/settings/global', 'Failed to get global settings')
 }
 
+export async function getEnvConfig(): Promise<{ apiKey: string; baseUrl: string; model: string }> {
+  return requestJson('/settings/env-config', 'Failed to get env config')
+}
+
 export async function updateGlobalSettings(settings: Record<string, unknown>): Promise<Record<string, unknown>> {
   return requestJson('/settings/global', 'Failed to update global settings', {
     method: 'PUT',

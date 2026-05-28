@@ -8,6 +8,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey.svg)]()
+[![Version](https://img.shields.io/badge/version-0.2.1-green.svg)]()
 
 [English](#english) | [中文](#中文)
 
@@ -189,6 +190,25 @@ knopath/
 └── assets/                # 截图与资源
 ```
 
+### 更新日志
+
+#### v0.2.1 (2026-05-28)
+
+**Bug 修复**
+- 修复启动时双向同步与 API 请求的竞态条件导致 `UNIQUE constraint failed` 崩溃
+- 修复删除项目后无法切换其他项目的问题
+- 修复 `removeProject` 中 `currentProject` 未经过 `normalizeProject` 导致状态异常
+- 修复 `selectProject` 缺少错误处理导致请求失败时 UI 卡死
+
+**性能优化**
+- 移除生成回答前的冗余 `saveProjectToBackend` 调用，流式输出启动更快
+
+#### v0.2.0
+
+- 浏览器插件：支持 DeepSeek、豆包、Kimi、千问、ChatGPT、Claude 一键导出
+- 分支支持：浏览器插件导出对话分支
+- 项目管理优化
+
 ### 贡献
 
 欢迎贡献！请阅读 [贡献指南](CONTRIBUTING.md) 了解详情。
@@ -346,6 +366,25 @@ knopath/
 │   └── build.py           # Python Embed packaging script
 └── assets/                # Screenshots & resources
 ```
+
+### Changelog
+
+#### v0.2.1 (2026-05-28)
+
+**Bug Fixes**
+- Fix `UNIQUE constraint failed` crash caused by race condition between initial sync and API requests
+- Fix inability to switch projects after deleting one
+- Fix `removeProject` not normalizing `currentProject`, causing broken state
+- Fix `selectProject` missing error handling, causing UI freeze on failed requests
+
+**Performance**
+- Remove redundant `saveProjectToBackend` call before answer generation, faster streaming startup
+
+#### v0.2.0
+
+- Browser extension: export from DeepSeek, Doubao, Kimi, Qianwen, ChatGPT, Claude
+- Branch support in browser extension exports
+- Project management improvements
 
 ### License
 

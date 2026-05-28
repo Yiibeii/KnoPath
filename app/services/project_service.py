@@ -269,10 +269,12 @@ async def save_full_project(db: Session, project_data: ProjectBase) -> dict:
                 insight_updated_at=_parse_optional_datetime(node.data.insightUpdatedAt),
                 exploration=node.data.exploration.model_dump() if node.data.exploration else None,
             )
+            savepoint = db.begin_nested()
             try:
                 db.add(db_node)
+                savepoint.commit()
             except IntegrityError:
-                db.rollback()
+                savepoint.rollback()
                 conflict = db.query(Node).filter(Node.id == node_id).first()
                 if conflict:
                     conflict.parent_id = node.data.parentId

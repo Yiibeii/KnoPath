@@ -33,6 +33,16 @@ def get_global_settings_route():
     return get_global_settings()
 
 
+@router.get("/settings/env-config")
+def get_env_config():
+    """Return LLM config from .env for frontend to use as defaults."""
+    return {
+        "apiKey": os.getenv("LLM_API_KEY", ""),
+        "baseUrl": os.getenv("LLM_BASE_URL", ""),
+        "model": os.getenv("LLM_MODEL_NAME", ""),
+    }
+
+
 @router.put("/settings/global", response_model=GlobalSettings)
 def update_global_settings_route(payload: GlobalSettingsUpdate):
     update_data = payload.model_dump(exclude_unset=True)

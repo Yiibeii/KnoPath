@@ -122,16 +122,27 @@ async def import_project_from_files(db: Session = Depends(get_db)):
 
         nodes_data = []
         seen_node_ids = set()
-        for filename in os.listdir(project_path):
-            if not filename.endswith('.md'):
-                continue
+        for root, _, files in os.walk(project_path):
+            for filename in files:
+                if not filename.endswith('.md'):
+                    continue
 
-            filepath = os.path.join(project_path, filename)
-            with open(filepath, 'r', encoding='utf-8') as f:
-                content = f.read()
+                filepath = os.path.join(root, filename)
+                try:
+                    with open(filepath, 'r', encoding='utf-8') as f:
+                        content = f.read()
+                except Exception as e:
+                    logger.warning(f"Failed to read file {filepath}: {e}")
+                    continue
 
-            node_data = parse_node_from_markdown(content)
-            if node_data and node_data.get('id'):
+                node_data = parse_node_from_markdown(content)
+                if not node_data:
+                    logger.warning(f"Failed to parse node from: {filepath}")
+                    continue
+                if not node_data.get('id'):
+                    node_data['id'] = str(uuid.uuid4())
+                    logger.info(f"No id in frontmatter, generated UUID for: {filepath}")
+
                 node_id = node_data['id']
                 if node_id not in seen_node_ids:
                     nodes_data.append(node_data)

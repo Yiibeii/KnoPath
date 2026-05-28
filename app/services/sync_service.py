@@ -285,6 +285,7 @@ async def _handle_file_upsert(
             width=290,
             height=380,
         )
+        savepoint = db.begin_nested()
         try:
             db.add(new_node)
             _update_node_children_count(db, parent_id)
@@ -294,9 +295,10 @@ async def _handle_file_upsert(
                 _ensure_edge_exists(db, project.id, parent_id, node_id)
 
             _update_project_node_counts(db, project.id)
+            savepoint.commit()
             logger.info(f"Created node: {node_id}")
         except IntegrityError:
-            db.rollback()
+            savepoint.rollback()
             # Node was created concurrently, update it instead
             existing = db.query(Node).filter(Node.id == node_id).first()
             if existing:

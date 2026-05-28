@@ -41,6 +41,7 @@ import {
   importWikiPagesFromFiles,
   updateGlobalSettings as updateGlobalSettingsApi,
   getGlobalSettings as getGlobalSettingsApi,
+  getEnvConfig as getEnvConfigApi,
 } from '../lib/api'
 import { isElectron, pathExistsElectron } from '../lib/electronFS'
 
@@ -155,9 +156,9 @@ function createDefaultSettings(): AppSettings {
   return {
     model: {
       provider: 'openai-compatible',
-      model: 'Qwen/Qwen3-30B-A3B-Instruct-2507',
-      apiKey: 'REDACTED_API_KEY',
-      baseUrl: 'https://dashscope.aliyuncs.com/compatible-mode/v1',
+      model: 'gpt-4o-mini',
+      apiKey: '',
+      baseUrl: 'https://api.openai.com/v1',
       temperature: 0.7,
       systemPrompt: '',
     },
@@ -439,31 +440,44 @@ export const useStore = create<AppState & StoreActions>((set, get) => ({
     } catch {
       // Keep local templates when backend is unavailable.
     }
+    try {
+      const envConfig = await getEnvConfigApi()
+      if (envConfig.apiKey && !settings.model.apiKey) settings.model.apiKey = envConfig.apiKey
+      if (envConfig.baseUrl && settings.model.baseUrl === 'https://api.openai.com/v1') settings.model.baseUrl = envConfig.baseUrl
+      if (envConfig.model && settings.model.model === 'gpt-4o-mini') settings.model.model = envConfig.model
+    } catch {
+      // Keep local model settings when backend is unavailable.
+    }
     await saveSettings(settings)
     set({ settings })
   },
 
   selectProject: async (id) => {
-    const project = await getProjectApi(id)
-    const normalizedProject = normalizeProject(project)
-    
-    // Check if project needs auto-layout (nodes have default positions)
-    const needsLayout = normalizedProject.nodes.some(node => 
-      node.position.x === 96 && node.position.y === 120
-    )
-    
-    const finalProject = needsLayout ? autoLayoutProject(normalizedProject) : normalizedProject
-    
-    set({
-      currentProject: finalProject,
-      focusedNodeId: null,
-      markedNodes: deriveMarkedNodes(finalProject),
-      notice: `Opened "${finalProject.title}".`,
-    })
-    
-    // Save layout if we applied auto-layout
-    if (needsLayout && finalProject.nodes.length > 0) {
-      await saveProjectToBackend(finalProject)
+    try {
+      const project = await getProjectApi(id)
+      const normalizedProject = normalizeProject(project)
+
+      // Check if project needs auto-layout (nodes have default positions)
+      const needsLayout = normalizedProject.nodes.some(node =>
+        node.position.x === 96 && node.position.y === 120
+      )
+
+      const finalProject = needsLayout ? autoLayoutProject(normalizedProject) : normalizedProject
+
+      set({
+        currentProject: finalProject,
+        focusedNodeId: null,
+        markedNodes: deriveMarkedNodes(finalProject),
+        notice: `Opened "${finalProject.title}".`,
+      })
+
+      // Save layout if we applied auto-layout
+      if (needsLayout && finalProject.nodes.length > 0) {
+        await saveProjectToBackend(finalProject)
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to open project'
+      set({ notice: message })
     }
   },
 
@@ -494,12 +508,13 @@ export const useStore = create<AppState & StoreActions>((set, get) => ({
     await deleteProjectFromBackend(id)
     set((state) => {
       const projects = state.projects.filter((project) => project.id !== id)
-      const currentProject = state.currentProject?.id === id ? projects[0] ?? null : state.currentProject
+      const nextProject = state.currentProject?.id === id ? projects[0] ?? null : state.currentProject
+      const currentProject = nextProject ? normalizeProject(nextProject) : null
       return {
         projects,
         currentProject,
-        markedNodes: currentProject ? state.markedNodes : [],
-        focusedNodeId: currentProject ? state.focusedNodeId : null,
+        focusedNodeId: null,
+        markedNodes: deriveMarkedNodes(currentProject),
         notice: 'Project removed.',
       }
     })
@@ -617,7 +632,6 @@ export const useStore = create<AppState & StoreActions>((set, get) => ({
     if (!question) return
 
     const context = buildContext(nodeId, currentProject)
-    await state.updateNodeContext(nodeId, context)
 
     let streamedAnswer = ''
     state.setNodeAnswerDraft(nodeId, '', state.settings.model.apiKey.trim() ? state.settings.model.model : 'local-mock')
